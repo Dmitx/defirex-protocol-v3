@@ -3,27 +3,29 @@ pragma solidity ^0.5.16;
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 // import "../openzeppelin/upgrades/contracts/Initializable.sol";
 
-import "./Ownable.sol";
+import "./OwnableUpgradable.sol";
 
 
-contract Adminable is Initializable, Ownable {
+contract AdminableUpgradable is Initializable, OwnableUpgradable {
     mapping(address => bool) public admins;
 
 
+    function checkAuthAdmin() private {
+        require(msg.sender == owner || admins[msg.sender], "Permission denied");
+    }
     modifier onlyOwnerOrAdmin {
-        require(msg.sender == owner ||
-                admins[msg.sender], "Permission denied");
+        checkAuthAdmin();
         _;
     }
 
 
     // Initializer – Constructor for Upgradable contracts
     function initialize() public initializer {
-        Ownable.initialize();  // Initialize Parent Contract
+        OwnableUpgradable.initialize();  // Initialize Parent Contract
     }
 
     function initialize(address payable newOwner) public initializer {
-        Ownable.initialize(newOwner);  // Initialize Parent Contract
+        OwnableUpgradable.initialize(newOwner);  // Initialize Parent Contract
     }
 
 
